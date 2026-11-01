@@ -1,0 +1,6 @@
+{
+  "name": "BookNook - Community Bookshelf",
+  "description": "Share the books on your shelf, browse titles from readers, and discover your next great read.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

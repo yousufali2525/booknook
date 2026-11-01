@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+color-scheme: light;
+}
+
+html {
+scroll-behavior: smooth;
+}
+
+body {
+background-color: #faf8f5;
+color: #1c1917;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+.swiper {
+width: 100%;
+height: 100%;
+}
+
+.swiper-pagination-bullet {
+background: #ffffff;
+opacity: 0.6;
+}
+
+.swiper-pagination-bullet-active {
+background: #d97746;
+opacity: 1;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+color: #ffffff !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+font-size: 22px !important;
+font-weight: bold;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+color: #d97746 !important;
+}
+
+::selection {
+background-color: #c85a32;
+color: #ffffff;
+}
+
+/* Tablet Responsive */
+@media (min-width: 640px) and (max-width: 1024px) {
+.swiper-button-next::after,
+.swiper-button-prev::after {
+font-size: 18px !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+transform: scale(0.85);
+}
+}
+
+/* Mobile Responsive */
+@media (max-width: 639px) {
+.swiper-button-next::after,
+.swiper-button-prev::after {
+font-size: 16px !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+transform: scale(0.75);
+}
+}
