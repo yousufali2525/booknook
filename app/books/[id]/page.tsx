@@ -20,11 +20,7 @@ export interface Book {
   createdAt?: string;
 }
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const DEFAULT_COVER =
-  'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 function getLocalDate(date: Date): string {
   const year = date.getFullYear();
@@ -285,14 +281,20 @@ export default function BookDetailsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 p-4 sm:p-6 lg:p-10">
             <div className="lg:col-span-5 flex flex-col items-center w-full">
               <div className="relative w-full max-w-xs sm:max-w-sm aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl bg-stone-100 border border-stone-200">
-                <img
-                  src={book.image || DEFAULT_COVER}
-                  alt={book.title}
-                  onError={(event) => {
-                    event.currentTarget.src = DEFAULT_COVER;
-                  }}
-                  className="w-full h-full object-cover"
-                />
+                {book.image ? (
+                  <img
+                    src={book.image}
+                    alt={book.title}
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none';
+                    }}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-stone-400 text-sm text-center p-4">
+                    No book image available
+                  </div>
+                )}
 
                 <div className="absolute top-3 sm:top-4 left-3 sm:left-4">
                   <span className="px-3 py-1 bg-[#1f1917]/85 backdrop-blur-md text-white text-xs font-semibold rounded-full uppercase tracking-wider">
