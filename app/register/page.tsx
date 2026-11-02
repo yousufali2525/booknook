@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -66,7 +67,7 @@ export default function RegisterPage() {
         email: email.trim(),
         password,
         image: photoUrl.trim() || undefined,
-        callbackURL: '/',
+        callbackURL: '/login',
       });
 
       if (result.error) {
@@ -76,11 +77,10 @@ export default function RegisterPage() {
         return;
       }
 
-      router.replace('/');
+      router.replace('/login');
       router.refresh();
     } catch (error) {
       console.error('Registration error:', error);
-
       setErrorMessage('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
@@ -101,7 +101,6 @@ export default function RegisterPage() {
         setErrorMessage(
           result.error.message || 'Google signup failed.'
         );
-
         setIsLoading(false);
       }
     } catch (error) {
@@ -170,11 +169,9 @@ export default function RegisterPage() {
 
         <div className="flex items-center gap-3 mb-6">
           <div className="flex-1 h-px bg-stone-200" />
-
           <span className="text-xs text-stone-400 uppercase font-semibold">
             Or with email
           </span>
-
           <div className="flex-1 h-px bg-stone-200" />
         </div>
 
@@ -254,7 +251,6 @@ export default function RegisterPage() {
             </div>
 
             <div className="mt-2 space-y-1 text-[11px] text-stone-500">
-
               <div className="flex items-center gap-1.5">
                 <CheckCircle2
                   className={`w-3.5 h-3.5 ${
@@ -263,7 +259,6 @@ export default function RegisterPage() {
                       : 'text-stone-300'
                   }`}
                 />
-
                 <span>At least 6 characters</span>
               </div>
 
@@ -275,7 +270,6 @@ export default function RegisterPage() {
                       : 'text-stone-300'
                   }`}
                 />
-
                 <span>At least one uppercase letter (A-Z)</span>
               </div>
 
@@ -287,10 +281,8 @@ export default function RegisterPage() {
                       : 'text-stone-300'
                   }`}
                 />
-
                 <span>At least one lowercase letter (a-z)</span>
               </div>
-
             </div>
           </div>
 
@@ -300,7 +292,6 @@ export default function RegisterPage() {
             className="w-full py-3.5 rounded-xl bg-[#c85a32] hover:bg-[#b34c26] text-white font-semibold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-4"
           >
             <UserPlus className="w-4 h-4" />
-
             <span>
               {isLoading ? 'Creating account...' : 'Register'}
             </span>
@@ -310,7 +301,6 @@ export default function RegisterPage() {
 
         <p className="mt-8 text-center text-xs text-stone-500">
           Already have an account?{' '}
-
           <Link
             href="/login"
             className="font-semibold text-[#c85a32] hover:underline cursor-pointer"
@@ -323,3 +313,4 @@ export default function RegisterPage() {
     </div>
   );
 }
+

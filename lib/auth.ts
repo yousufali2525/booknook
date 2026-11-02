@@ -1,3 +1,4 @@
+
 import dns from "node:dns";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
@@ -11,30 +12,30 @@ const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
 if (!MONGODB_URI) {
-throw new Error("MONGODB_URI is missing");
+  throw new Error("MONGODB_URI is missing");
 }
 
 if (!BETTER_AUTH_SECRET) {
-throw new Error("BETTER_AUTH_SECRET is missing");
+  throw new Error("BETTER_AUTH_SECRET is missing");
 }
 
 if (!BETTER_AUTH_URL) {
-throw new Error("BETTER_AUTH_URL is missing");
+  throw new Error("BETTER_AUTH_URL is missing");
 }
 
 if (!NEXT_PUBLIC_APP_URL) {
-throw new Error("NEXT_PUBLIC_APP_URL is missing");
+  throw new Error("NEXT_PUBLIC_APP_URL is missing");
 }
 
 const globalForMongo = globalThis as typeof globalThis & {
-mongoClient?: MongoClient;
+  mongoClient?: MongoClient;
 };
 
 const client =
-globalForMongo.mongoClient ?? new MongoClient(MONGODB_URI);
+  globalForMongo.mongoClient ?? new MongoClient(MONGODB_URI);
 
 if (process.env.NODE_ENV !== "production") {
-globalForMongo.mongoClient = client;
+  globalForMongo.mongoClient = client;
 }
 
 const db = client.db("booknook");
@@ -43,26 +44,27 @@ const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 export const auth = betterAuth({
-database: mongodbAdapter(db),
-secret: BETTER_AUTH_SECRET,
-baseURL: BETTER_AUTH_URL,
-trustedOrigins: [NEXT_PUBLIC_APP_URL],
+  database: mongodbAdapter(db),
+  secret: BETTER_AUTH_SECRET,
+  baseURL: BETTER_AUTH_URL,
+  trustedOrigins: [NEXT_PUBLIC_APP_URL],
 
-emailAndPassword: {
-enabled: true,
-autoSignIn: true,
-minPasswordLength: 6,
-},
+  emailAndPassword: {
+    enabled: true,
+    autoSignIn: false,
+    minPasswordLength: 6,
+  },
 
-socialProviders:
-googleClientId && googleClientSecret
-? {
-google: {
-clientId: googleClientId,
-clientSecret: googleClientSecret,
-},
-}
-: {},
+  socialProviders:
+    googleClientId && googleClientSecret
+      ? {
+          google: {
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+          },
+        }
+      : {},
 });
 
 export type Auth = typeof auth;
+
