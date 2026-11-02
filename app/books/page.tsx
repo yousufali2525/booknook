@@ -27,23 +27,19 @@ const CATEGORIES = [
   'Others',
 ];
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 export default function AllBooksPage() {
   const router = useRouter();
   const { user: currentUser, loading: authLoading } = useAuth();
 
   const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [sortBy, setSortBy] = useState<string>('default');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [sortBy, setSortBy] = useState('default');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
-
-  const defaultCover =
-    'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80';
 
   const handleViewDetails = (bookId: string) => {
     if (authLoading) return;
@@ -71,24 +67,41 @@ export default function AllBooksPage() {
 
       const data = await res.json();
 
-      const bookList = Array.isArray(data)
-        ? data
-        : Array.isArray(data.books)
-          ? data.books
-          : Array.isArray(data.data)
-            ? data.data
-            : Array.isArray(data.data?.books)
-              ? data.data.books
-              : [];
+      let bookList: Book[] = [];
 
-      setBooks(bookList);
+      if (Array.isArray(data)) {
+        bookList = data;
+      } else if (Array.isArray(data.books)) {
+        bookList = data.books;
+      } else if (Array.isArray(data.data)) {
+        bookList = data.data;
+      } else if (Array.isArray(data.data?.books)) {
+        bookList = data.data.books;
+      }
+
+      const validBooks = bookList.filter(
+        (book) =>
+          book &&
+          typeof book.title === 'string' &&
+          typeof book.category === 'string'
+      );
+
+      console.log('Total books received:', validBooks.length);
+      console.log(
+        'Quantum Resonance:',
+        validBooks.filter((book) =>
+          book.title.toLowerCase().includes('quantum resonance')
+        )
+      );
+
+      setBooks(validBooks);
     } catch (err) {
       console.error('Error fetching books:', err);
 
       setError(
         err instanceof Error
           ? err.message
-          : 'Could not connect to the backend server. Make sure your server is running on port 5000.'
+          : 'Could not connect to the backend server.'
       );
     } finally {
       setLoading(false);
@@ -101,7 +114,7 @@ export default function AllBooksPage() {
 
     if (category) {
       const matchedCategory = CATEGORIES.find(
-        (item) => item.toLowerCase() === category.toLowerCase()
+        (item) => item.toLowerCase() === category.trim().toLowerCase()
       );
 
       if (matchedCategory) {
@@ -115,15 +128,15 @@ export default function AllBooksPage() {
   }, [fetchBooks]);
 
   const getCopiesCount = (book: Book): number => {
-    if (book.availableCopies !== undefined && book.availableCopies !== null) {
+    if (book.availableCopies != null) {
       return Number(book.availableCopies);
     }
 
-    if (book.quantity !== undefined && book.quantity !== null) {
+    if (book.quantity != null) {
       return Number(book.quantity);
     }
 
-    if (book.totalCopies !== undefined && book.totalCopies !== null) {
+    if (book.totalCopies != null) {
       return Number(book.totalCopies);
     }
 
@@ -134,8 +147,8 @@ export default function AllBooksPage() {
     .filter((book) => {
       const title = (book.title || '').toLowerCase();
       const author = (book.author || '').toLowerCase();
-      const category = (book.category || '').toLowerCase();
-      const query = searchQuery.toLowerCase().trim();
+      const category = (book.category || '').trim().toLowerCase();
+      const query = searchQuery.trim().toLowerCase();
 
       const matchesSearch =
         query === '' ||
@@ -144,7 +157,7 @@ export default function AllBooksPage() {
 
       const matchesCategory =
         selectedCategory === 'All' ||
-        category === selectedCategory.toLowerCase();
+        category === selectedCategory.trim().toLowerCase();
 
       return matchesSearch && matchesCategory;
     })
@@ -192,7 +205,7 @@ export default function AllBooksPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-5 sm:-mt-7 relative z-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 relative z-20">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl shadow-stone-200/60 p-4 sm:p-5 md:p-6 border border-stone-200 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 sm:gap-4 items-center">
             <div className="sm:col-span-2 lg:col-span-6 relative">
@@ -333,7 +346,6 @@ export default function AllBooksPage() {
         {loading ? (
           <div className="py-20 sm:py-24 flex flex-col items-center justify-center text-center">
             <div className="w-12 h-12 border-4 border-[#c85a32]/20 border-t-[#c85a32] rounded-full animate-spin mb-4"></div>
-
             <p className="text-stone-500 font-medium font-serif text-sm sm:text-base">
               Accessing library records...
             </p>
@@ -343,9 +355,7 @@ export default function AllBooksPage() {
             <h3 className="text-lg font-serif font-bold text-red-900">
               Backend Connection Notice
             </h3>
-
             <p className="text-xs sm:text-sm text-red-700">{error}</p>
-
             <button
               onClick={fetchBooks}
               className="mt-2 px-5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition"
@@ -358,16 +368,13 @@ export default function AllBooksPage() {
             <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4 text-stone-400 font-serif text-2xl font-bold">
               BN
             </div>
-
             <h3 className="text-xl font-serif font-bold text-stone-800">
               No Volumes Found
             </h3>
-
             <p className="text-sm text-stone-500 mt-2 max-w-md mx-auto">
               No matching books found under this query or category filter. Try
               clearing your search parameters.
             </p>
-
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -391,14 +398,16 @@ export default function AllBooksPage() {
                   className="bg-white rounded-xl sm:rounded-2xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group min-w-0"
                 >
                   <div className="relative aspect-[4/3] bg-stone-100 overflow-hidden">
-                    <img
-                      src={book.image || defaultCover}
-                      alt={book.title || 'Book cover'}
-                      onError={(e) => {
-                        e.currentTarget.src = defaultCover;
-                      }}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {book.image && (
+                      <img
+                        src={book.image}
+                        alt={book.title || 'Book cover'}
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    )}
 
                     <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
                       <span className="px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold rounded-md bg-[#1f1917]/80 backdrop-blur-sm text-white">
@@ -424,11 +433,9 @@ export default function AllBooksPage() {
                       <h3 className="font-serif font-bold text-base sm:text-lg text-stone-900 line-clamp-1 group-hover:text-[#c85a32] transition">
                         {book.title}
                       </h3>
-
                       <p className="text-xs text-stone-500 font-medium mt-1">
                         By {book.author || 'Unknown Author'}
                       </p>
-
                       {book.description && (
                         <p className="text-xs text-stone-600 mt-3 line-clamp-2 leading-relaxed">
                           {book.description}
@@ -440,7 +447,6 @@ export default function AllBooksPage() {
                       <span className="text-[10px] sm:text-xs text-stone-400 truncate">
                         {book.category}
                       </span>
-
                       <button
                         type="button"
                         onClick={() => handleViewDetails(bookId)}
@@ -448,7 +454,6 @@ export default function AllBooksPage() {
                         className="shrink-0 inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold px-2.5 sm:px-3 py-2 rounded-lg bg-[#faf8f5] hover:bg-[#c85a32] text-[#2c2420] hover:text-white border border-stone-200 hover:border-[#c85a32] transition disabled:opacity-50"
                       >
                         <span>View Details</span>
-
                         <svg
                           className="w-3.5 h-3.5"
                           fill="none"
@@ -497,20 +502,21 @@ export default function AllBooksPage() {
                       >
                         <td className="py-4 px-6">
                           <div className="flex items-center gap-4">
-                            <img
-                              src={book.image || defaultCover}
-                              alt={book.title || 'Book cover'}
-                              onError={(e) => {
-                                e.currentTarget.src = defaultCover;
-                              }}
-                              className="w-12 h-16 object-cover rounded-md border border-stone-200 shadow-sm shrink-0"
-                            />
+                            {book.image && (
+                              <img
+                                src={book.image}
+                                alt={book.title || 'Book cover'}
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                                className="w-12 h-16 object-cover rounded-md border border-stone-200 shadow-sm shrink-0"
+                              />
+                            )}
 
                             <div>
                               <p className="font-serif font-bold text-stone-900 hover:text-[#c85a32] transition">
                                 {book.title}
                               </p>
-
                               <p className="text-xs text-stone-500 mt-0.5">
                                 By {book.author}
                               </p>
@@ -537,7 +543,6 @@ export default function AllBooksPage() {
                                 isAvailable ? 'bg-emerald-500' : 'bg-rose-500'
                               }`}
                             ></span>
-
                             {isAvailable ? `${copies} in stock` : 'Out of stock'}
                           </span>
                         </td>
@@ -550,7 +555,6 @@ export default function AllBooksPage() {
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#faf8f5] hover:bg-[#c85a32] text-[#2c2420] hover:text-white border border-stone-200 transition disabled:opacity-50"
                           >
                             <span>Details</span>
-
                             <svg
                               className="w-3 h-3"
                               fill="none"

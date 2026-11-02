@@ -19,10 +19,10 @@ interface Book {
   category: string;
   image: string;
   description: string;
+  createdAt?: string;
 }
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 export default function NewArrivals() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -35,12 +35,13 @@ export default function NewArrivals() {
         setLoading(true);
         setError('');
 
-        const response = await fetch(
-          `${API_URL}/books?sort=newest&limit=6`,
-          {
-            cache: 'no-store',
-          }
-        );
+        if (!API_URL) {
+          throw new Error('API URL is not configured.');
+        }
+
+        const response = await fetch(`${API_URL}/books`, {
+          cache: 'no-store',
+        });
 
         if (!response.ok) {
           throw new Error('Failed to load books from database.');
@@ -48,7 +49,7 @@ export default function NewArrivals() {
 
         const data = await response.json();
 
-        const bookList = Array.isArray(data)
+        const bookList: Book[] = Array.isArray(data)
           ? data
           : Array.isArray(data.books)
             ? data.books
@@ -58,7 +59,23 @@ export default function NewArrivals() {
                 ? data.data.books
                 : [];
 
-        setBooks(bookList.slice(0, 6));
+        const validBooks = bookList.filter(
+          (book) => book && book._id && book.title
+        );
+
+        const sortedBooks = [...validBooks].sort((a, b) => {
+          const dateA = a.createdAt
+            ? new Date(a.createdAt).getTime()
+            : 0;
+
+          const dateB = b.createdAt
+            ? new Date(b.createdAt).getTime()
+            : 0;
+
+          return dateB - dateA;
+        });
+
+        setBooks(sortedBooks.slice(0, 6));
       } catch (error) {
         console.error('Failed to fetch books:', error);
 
@@ -149,11 +166,16 @@ export default function NewArrivals() {
               className="group bg-white rounded-xl border border-stone-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col min-w-0"
             >
               <div className="relative h-52 sm:h-56 lg:h-60 w-full overflow-hidden bg-stone-100">
-                <img
-                  src={book.image}
-                  alt={book.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {book.image && (
+                  <img
+                    src={book.image}
+                    alt={book.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    onError={(event) => {
+                      event.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
 
                 <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-medium bg-stone-900/80 text-white backdrop-blur-md">
                   {book.category}

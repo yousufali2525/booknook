@@ -13,11 +13,7 @@ const CATEGORIES = [
   'Others',
 ];
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const DEFAULT_COVER =
-  'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 export default function AddBookPage() {
   const router = useRouter();
@@ -243,7 +239,7 @@ export default function AddBookPage() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#2c2420] pb-24">
-      <div className="relative py-14 bg-[#1f1917] text-white overflow-hidden border-b border-[#3b322e]">
+      <div className="relative pt-20 pb-16 bg-[#1f1917] text-white overflow-hidden border-b border-[#3b322e]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10 text-center">
           <span className="inline-block text-[#d97746] text-xs font-semibold tracking-widest uppercase mb-2 px-3 py-1 bg-[#d97746]/10 rounded-full border border-[#d97746]/20">
             Curator Desk
@@ -260,7 +256,7 @@ export default function AddBookPage() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-6 relative z-20">
         <div className="bg-white rounded-3xl border border-stone-200 shadow-xl shadow-stone-200/50 p-6 sm:p-10">
           {errorMessage && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-xl">
@@ -376,11 +372,13 @@ export default function AddBookPage() {
                 </div>
 
                 <div className="w-20 h-28 rounded-xl border border-stone-200 overflow-hidden bg-stone-100 shrink-0">
-                  <img
-                    src={image || DEFAULT_COVER}
-                    alt="Book cover preview"
-                    className="w-full h-full object-cover"
-                  />
+                  {image && (
+                    <img
+                      src={image}
+                      alt="Book cover preview"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </div>
             </div>

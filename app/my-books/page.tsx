@@ -34,11 +34,7 @@ const CATEGORIES = [
   'Biography',
 ];
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const DEFAULT_COVER =
-  'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=400&q=80';
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 const getToken = async (): Promise<string> => {
   const response = await fetch('/api/backend-token', {
@@ -285,7 +281,7 @@ export default function MyBooksPage() {
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#2c2420] pb-24">
-      <div className="relative py-14 bg-[#1f1917] text-white border-b border-[#3b322e]">
+      <div className="relative pt-20 pb-16 bg-[#1f1917] text-white border-b border-[#3b322e]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <span className="inline-block text-[#d97746] text-xs font-semibold tracking-widest uppercase mb-2 px-3 py-1 bg-[#d97746]/10 rounded-full border border-[#d97746]/20">
             Personal Registry
@@ -302,7 +298,7 @@ export default function MyBooksPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/60 p-5 sm:p-6 border border-stone-200 space-y-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="relative w-full md:w-96">
@@ -334,12 +330,12 @@ export default function MyBooksPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 pt-2 scrollbar-none">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition border ${
+                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition border shrink-0 ${
                   selectedCategory === cat
                     ? 'bg-[#2c2420] text-white border-[#2c2420]'
                     : 'bg-[#faf8f5] text-stone-600 border-stone-200 hover:bg-stone-100'
@@ -440,11 +436,8 @@ export default function MyBooksPage() {
                         <td className="py-4 px-4 sm:px-6">
                           <div className="flex items-center gap-3">
                             <img
-                              src={book.image || DEFAULT_COVER}
+                              src={book.image}
                               alt={book.title}
-                              onError={(e) => {
-                                e.currentTarget.src = DEFAULT_COVER;
-                              }}
                               className="w-12 h-16 object-cover rounded-lg shadow-sm border border-stone-200 shrink-0"
                             />
 
