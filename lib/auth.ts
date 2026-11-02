@@ -1,4 +1,3 @@
-
 import dns from "node:dns";
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
@@ -47,7 +46,12 @@ export const auth = betterAuth({
   database: mongodbAdapter(db),
   secret: BETTER_AUTH_SECRET,
   baseURL: BETTER_AUTH_URL,
-  trustedOrigins: [NEXT_PUBLIC_APP_URL],
+
+  trustedOrigins: [
+    "http://localhost:3000",
+    BETTER_AUTH_URL,
+    NEXT_PUBLIC_APP_URL,
+  ],
 
   emailAndPassword: {
     enabled: true,
@@ -67,4 +71,3 @@ export const auth = betterAuth({
 });
 
 export type Auth = typeof auth;
-
