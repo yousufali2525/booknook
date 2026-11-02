@@ -16,7 +16,6 @@ import { authClient } from '@/lib/auth-client';
 
 export default function RegisterPage() {
   const router = useRouter();
-
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
