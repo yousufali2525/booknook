@@ -10,6 +10,9 @@ const BETTER_AUTH_SECRET = process.env.BETTER_AUTH_SECRET;
 const BETTER_AUTH_URL = process.env.BETTER_AUTH_URL;
 const NEXT_PUBLIC_APP_URL = process.env.NEXT_PUBLIC_APP_URL;
 
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI is missing");
 }
@@ -39,19 +42,19 @@ if (process.env.NODE_ENV !== "production") {
 
 const db = client.db("booknook");
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID;
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+const trustedOrigins = [
+  BETTER_AUTH_URL,
+  NEXT_PUBLIC_APP_URL,
+];
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
+
   secret: BETTER_AUTH_SECRET,
+
   baseURL: BETTER_AUTH_URL,
 
-  trustedOrigins: [
-    "http://localhost:3000",
-    BETTER_AUTH_URL,
-    NEXT_PUBLIC_APP_URL,
-  ],
+  trustedOrigins,
 
   emailAndPassword: {
     enabled: true,
@@ -60,11 +63,11 @@ export const auth = betterAuth({
   },
 
   socialProviders:
-    googleClientId && googleClientSecret
+    GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET
       ? {
           google: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
+            clientId: GOOGLE_CLIENT_ID,
+            clientSecret: GOOGLE_CLIENT_SECRET,
           },
         }
       : {},
