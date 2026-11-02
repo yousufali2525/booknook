@@ -1,9 +1,7 @@
-
 'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   BookOpen,
   UserPlus,
@@ -15,7 +13,6 @@ import {
 import { authClient } from '@/lib/auth-client';
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
@@ -73,15 +70,14 @@ export default function RegisterPage() {
         setErrorMessage(
           result.error.message || 'Registration failed. Please try again.'
         );
+        setIsLoading(false);
         return;
       }
 
-      router.replace('/login');
-      router.refresh();
+      window.location.href = '/login';
     } catch (error) {
       console.error('Registration error:', error);
       setErrorMessage('Something went wrong. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -312,4 +308,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-
