@@ -1,83 +1,266 @@
-# 📚 BookNook - Community Library & Book Sharing Platform
+# 📚 BookNook – A Small Online Library
 
-[![Next.js](https://img.shields.io/badge/Next.js-14%2B-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+**Live Website:** https://booknook-22-cc8a.vercel.app/  
+**Client Repository:** https://github.com/yousufali2525/booknook  
+**Server Repository:** https://github.com/yousufali2525/booknook-server  
+**Backend API:** https://booknook-server-34u5.onrender.com
 
-BookNook is a modern full-stack web application designed for avid readers and community libraries. It empowers users to discover compelling titles, share their personal bookshelf, borrow books with dynamic date scheduling, and manage reading histories seamlessly.
+## 📖 Project Overview
 
----
+BookNook is a small online library where users can explore books, add new books, borrow books for a few days, and return borrowed books. Users can also manage the books they have added and track their borrowing history.
 
-## 🔗 Important Links
+The main goal of this project is to provide a simple and user-friendly online library experience.
 
-- **Live Application:** [https://booknook-library.vercel.app](https://booknook-library.vercel.app) *(আপনার লাইভ Vercel/Firebase সাইট লিংক এখানে দিন)*
-- **Client Repository:** [https://github.com/your-username/booknook-client](https://github.com/your-username/booknook-client) *(আপনার ক্লায়েন্ট রিপোজিটরি লিংক)*
-- **Server Repository:** [https://github.com/your-username/booknook-server](https://github.com/your-username/booknook-server) *(আপনার ব্যাকএন্ড সার্ভার রিপোজিটরি লিংক)*
+## ✨ Main Features
 
----
-
-## ✨ Key Features
-
-- **🔐 User Authentication & Authorization:**
-  - Secure registration and login powered by Context API and token authentication.
-  - Dynamic navigation bar updating immediately based on user login status.
-  - Route protection preventing unauthenticated users from borrowing or adding books.
-
-- **📖 Dynamic Book Catalog & Filtering:**
-  - Explore books with instant categorization (Fiction, Science, History, Philosophy, Technology, Fantasy).
-  - Search books by title and author.
-  - Live availability counters showing remaining copies in real time.
-
-- **📑 Dynamic Book Details Route (`/books/[id]`):**
-  - High-resolution cover artwork, author information, and book synopsis.
-  - Stock verification preventing borrowing when available copies reach zero.
-  - Contributor attribution acknowledging community members who added books.
-
-- **🤝 Interactive Borrow System:**
-  - Modal-based borrowing flow pre-filling borrower name and email.
-  - Return date calendar picker with past-date prevention.
-  - Instant decrement of available stock upon successful borrow.
-
-- **📦 My Borrows Management (`/my-borrows`):**
-  - Dedicated personal dashboard displaying all active loans.
-  - Visual status badges (Active, Overdue, Returned).
-  - One-click return book functionality that automatically restores available copies to the community shelf.
-
-- **➕ Community Book Contribution (`/add-book`):**
-  - Form validation with live image preview.
-  - Automatic attribution to the logged-in user.
-
-- **🎨 Modern Dark Mode & Responsive UI:**
-  - Carefully crafted dark aesthetic optimized for readability.
-  - 100% mobile, tablet, and desktop responsive layouts.
-  - Custom branded 404 page for non-existent routes.
-
----
+- **User Authentication:** Register and log in using email and password with BetterAuth.
+- **Google Login:** Sign in using a Google account.
+- **User Profile:** View profile information and manage account details.
+- **Home Page:** Explore a banner slider, latest books, top categories, and borrowing information.
+- **Latest Books:** Display the six newest books from the database.
+- **All Books:** Browse all available books with search, filtering, sorting, and grid/table views.
+- **Book Details:** View book information, including title, author, category, description, and availability.
+- **Add Books:** Logged-in users can add books with images, descriptions, categories, and total copies.
+- **My Books:** Users can view and manage the books they have added.
+- **Update Books:** Edit existing book information.
+- **Delete Books:** Delete books using a custom confirmation modal.
+- **Borrow Books:** Borrow available books through a confirmation modal.
+- **My Borrows:** View borrowed books with borrowing and return dates.
+- **Return Books:** Return borrowed books and update book availability.
+- **Available Copies:** Automatically decrease available copies when a book is borrowed and increase them when returned.
+- **Duplicate Borrow Prevention:** Prevent users from borrowing the same book twice at the same time.
+- **Protected Routes:** Restrict private pages to authenticated users.
+- **JWT Authentication:** Protect private backend API routes with token validation.
+- **Image Upload:** Upload book cover images through the backend upload system.
+- **Loading Spinner:** Display loading indicators while data is being fetched.
+- **Custom 404 Page:** Show a custom Not Found page with a Back to Home button.
+- **Responsive Design:** Support mobile, tablet, and desktop devices.
+- **Toast Notifications:** Display success and error messages without using default browser alerts.
 
 ## 🛠️ Technology Stack
 
-### Frontend:
-- **Framework:** Next.js (App Router)
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS
-- **Icons:** Lucide React
-- **State Management:** React Context API (`AuthProvider`)
+### Frontend
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Lucide React
 
-### Backend & Database:
-- **Runtime:** Node.js
-- **Server Framework:** Express.js
-- **Database:** MongoDB (via MongoDB Atlas)
-- **ODM:** Mongoose
+### Authentication & Authorization
+- BetterAuth
+- MongoDB Adapter
+- Google OAuth
+- JWT
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB
+- JavaScript
+
+### Deployment
+- Vercel – Frontend Hosting
+- Render – Backend Hosting
+- MongoDB Atlas – Database
+
+## 🔐 Authentication System
+
+BookNook uses BetterAuth with the MongoDB Adapter for user authentication.
+
+Authentication features include:
+
+- User registration with name, email, photo URL, and password.
+- Password validation requiring uppercase, lowercase, and at least 6 characters.
+- Email and password login.
+- Google authentication.
+- Protected routes for authenticated users.
+- Session persistence after page reload.
+- Login redirection when accessing private routes without authentication.
+- Forgot Password interface (functionality not implemented, as allowed by the assignment).
+
+## 📚 Book Management System
+
+Users can perform the following operations:
+
+| Operation | Description |
+|---|---|
+| Create | Add a new book |
+| Read | View all books and book details |
+| Update | Edit books added by the logged-in user |
+| Delete | Delete books added by the logged-in user |
+
+Each book contains information such as title, author, category, image, description, user information, date added, total copies, and available copies.
+
+## 🔄 Borrowing System
+
+The borrowing system allows authenticated users to borrow available books.
+
+- Users can borrow a book from its details page.
+- Borrowing information is saved in the MongoDB `borrows` collection.
+- Each borrowing record contains book ID, book title, book image, user email, borrow date, and return date.
+- Available copies decrease when a book is borrowed.
+- Available copies increase when a book is returned.
+- Users cannot borrow the same book twice while an active borrowing record exists.
+- The Borrow button is disabled when no copies are available.
+
+## 🌐 Backend API Routes
+
+Base URL:
+
+`https://booknook-server-34u5.onrender.com/api`
+
+### Books API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/books` | Get all books |
+| GET | `/books/:id` | Get a single book |
+| POST | `/books` | Add a new book |
+| PATCH | `/books/:id` | Update a book |
+| DELETE | `/books/:id` | Delete a book |
+
+### Borrow API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/borrows` | Borrow a book |
+| GET | `/borrows` | Get borrowed books of the logged-in user |
+| DELETE | `/borrows/:id` | Return a borrowed book |
+
+Private API routes use JWT token validation.
+
+## 🗂️ Database Collections
+
+The application uses MongoDB Atlas.
+
+Main collections include:
+
+- `books` – Stores book information.
+- `borrows` – Stores borrowing records.
+- `user` – Stores BetterAuth user information.
+- `session` – Stores user sessions.
+- `account` – Stores authentication account information.
+
+## ⚙️ Installation and Setup
+
+### 1. Clone the Client Repository
+
+```bash
+git clone https://github.com/yousufali2525/booknook.git
+cd booknook
+```
+
+### 2. Install Client Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Client Environment Variables
+
+Create a `.env.local` file in the client project root.
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+BETTER_AUTH_URL=http://localhost:3000
+
+MONGODB_URI=your_mongodb_connection_string
+MONGODB_DB=booknook
+BETTER_AUTH_SECRET=your_better_auth_secret
+
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+### 4. Run the Client Application
+
+```bash
+npm run dev
+```
+
+Open:
+
+`http://localhost:3000`
+
+### 5. Clone the Server Repository
+
+Open another terminal:
+
+```bash
+git clone https://github.com/yousufali2525/booknook-server.git
+cd booknook-server
+```
+
+### 6. Install Server Dependencies
+
+```bash
+npm install
+```
+
+### 7. Configure Server Environment Variables
+
+Create a `.env` file in the backend project root.
+
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+DB_NAME=booknook
+JWT_SECRET=your_jwt_secret
+```
+
+Add any other environment variables required by your backend configuration.
+
+### 8. Run the Backend Server
+
+```bash
+npm run dev
+```
+
+The backend will run at:
+
+`http://localhost:5000`
+
+**Note:** Never upload `.env` or `.env.local` files containing secret credentials to GitHub.
+
+## 🚀 Deployment
+
+- Frontend deployed on Vercel.
+- Backend deployed on Render.
+- Database hosted on MongoDB Atlas.
+
+## 📱 Responsive Design
+
+BookNook is designed to work across different screen sizes:
+
+- Mobile devices
+- Tablets
+- Desktop computers
+
+The layout uses responsive grids, flexible components, and consistent spacing for a smooth user experience.
+
+## 📌 Assignment Requirements
+
+- Next.js App Router frontend.
+- Express.js and MongoDB backend.
+- BetterAuth authentication with MongoDB Adapter.
+- Google OAuth login.
+- Protected private routes.
+- Book CRUD operations.
+- Borrow and return functionality.
+- JWT validation for protected APIs.
+- Loading spinner and custom 404 page.
+- Route-specific page titles.
+- Responsive user interface.
+- Client-side minimum 15 meaningful GitHub commits.
+- Server-side minimum 8 meaningful GitHub commits.
+
+## 👨‍💻 Developer
+
+**GitHub:** https://github.com/yousufali2525  
+**Email:** yousufali025250@gmail.com  
+**Location:** Rajshahi, Bangladesh
 
 ---
 
-## 🚀 Getting Started (Run Locally)
-
-Follow these steps to run the application on your local machine:
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/your-username/booknook.git
-cd booknook
+© 2026 BookNook Library. All rights reserved.
