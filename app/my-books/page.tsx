@@ -1,11 +1,9 @@
 'use client';
-
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Trash2, X, AlertTriangle } from 'lucide-react';
-
 export interface Book {
   _id?: string;
   id?: string;
@@ -21,68 +19,39 @@ export interface Book {
   userEmail?: string;
   createdAt?: string;
 }
-
-const CATEGORIES = [
-  'All',
-  'Fiction',
-  'Science',
-  'History',
-  'Kids',
-  'Philosophy',
-  'Technology',
-  'Mystery',
-  'Biography',
-];
-
+const CATEGORIES = ['All', 'Fiction', 'Science', 'History', 'Kids', 'Philosophy', 'Technology', 'Mystery', 'Biography',];
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
-
 const getToken = async (): Promise<string> => {
-  const response = await fetch('/api/backend-token', {
-    method: 'GET',
-    cache: 'no-store',
-  });
-
+  const response = await fetch('/api/backend-token', {method: 'GET',cache: 'no-store',});
   const data = await response.json();
-
   if (!response.ok || !data.token) {
-    throw new Error(
-      data.message || 'Authentication failed. Please login again.'
-    );
+    throw new Error(data.message || 'Authentication failed. Please login again.');
   }
-
   return data.token;
 };
-
 export default function MyBooksPage() {
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-
   const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
   const [deleteConfirmBook, setDeleteConfirmBook] = useState<Book | null>(null);
-
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [updateLoading, setUpdateLoading] = useState(false);
-
   const fetchMyBooks = useCallback(async () => {
     if (!user?.email) {
       setBooks([]);
       setLoading(false);
       return;
     }
-
     setLoading(true);
     setError('');
-
     try {
       const token = await getToken();
-
       const response = await fetch(`${API_URL}/books/my-books`, {
         method: 'GET',
         headers: {
@@ -90,37 +59,25 @@ export default function MyBooksPage() {
         },
         cache: 'no-store',
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || 'Failed to load your books.');
       }
-
-      const bookList = Array.isArray(data)
-        ? data
-        : data.books || data.data || [];
-
+      const bookList = Array.isArray(data)? data: data.books || data.data || [];
       setBooks(Array.isArray(bookList) ? bookList : []);
     } catch (error) {
       setError(
-        error instanceof Error
-          ? error.message
-          : 'Could not fetch your books.'
-      );
+        error instanceof Error ? error.message  : 'Could not fetch your books.' );
     } finally {
       setLoading(false);
     }
   }, [user?.email]);
-
   useEffect(() => {
     if (authLoading) return;
-
     if (!user) {
       router.push('/login');
       return;
     }
-
     fetchMyBooks();
   }, [user, authLoading, router, fetchMyBooks]);
 
@@ -131,35 +88,26 @@ export default function MyBooksPage() {
       setActionSuccess('');
     }, 4000);
   };
-
   const handleDelete = async () => {
     const bookId = deleteConfirmBook?._id || deleteConfirmBook?.id;
-
     if (!bookId) return;
-
     setDeleteLoadingId(bookId);
     setError('');
-
     try {
       const token = await getToken();
-
       const response = await fetch(`${API_URL}/books/${bookId}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || 'Failed to delete book.');
       }
-
       setBooks((previousBooks) =>
         previousBooks.filter((book) => (book._id || book.id) !== bookId)
       );
-
       setDeleteConfirmBook(null);
       showSuccess('Book removed successfully.');
     } catch (error) {
@@ -170,42 +118,23 @@ export default function MyBooksPage() {
       setDeleteLoadingId(null);
     }
   };
-
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => { e.preventDefault();
     if (!editingBook) return;
-
     const bookId = editingBook._id || editingBook.id;
-
     if (!bookId) return;
-
-    if (
-      !editingBook.title.trim() ||
-      !editingBook.author.trim() ||
-      !editingBook.category.trim() ||
-      !editingBook.image.trim() ||
-      !editingBook.description?.trim()
-    ) {
+    if ( !editingBook.title.trim() || !editingBook.author.trim() || !editingBook.category.trim() || !editingBook.image.trim() || !editingBook.description?.trim()) {
       setError('Please fill in all required fields.');
       return;
     }
-
-    const totalCopies = Number(
-      editingBook.totalCopies ?? editingBook.quantity ?? 1
-    );
-
+    const totalCopies = Number( editingBook.totalCopies ?? editingBook.quantity ?? 1);
     if (!Number.isInteger(totalCopies) || totalCopies < 1) {
       setError('Total copies must be at least 1.');
       return;
     }
-
     setUpdateLoading(true);
     setError('');
-
     try {
       const token = await getToken();
-
       const response = await fetch(`${API_URL}/books/${bookId}`, {
         method: 'PATCH',
         headers: {
@@ -221,25 +150,17 @@ export default function MyBooksPage() {
           totalCopies,
         }),
       });
-
       const data = await response.json();
-
       if (!response.ok) {
         throw new Error(data.message || 'Failed to update book.');
       }
-
       const updatedBook = data.book || data.data;
-
       if (updatedBook) {
-        setBooks((previousBooks) =>
-          previousBooks.map((book) =>
-            (book._id || book.id) === bookId ? updatedBook : book
-          )
+        setBooks((previousBooks) =>  previousBooks.map((book) => (book._id || book.id) === bookId ? updatedBook : book )
         );
       } else {
         await fetchMyBooks();
       }
-
       setEditingBook(null);
       showSuccess('Book information updated successfully.');
     } catch (error) {
@@ -250,19 +171,12 @@ export default function MyBooksPage() {
       setUpdateLoading(false);
     }
   };
-
   const filteredBooks = books.filter((book) => {
-    const matchesSearch =
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase());
-
+    const matchesSearch =  book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||  book.author.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === 'All' ||
-      book.category.toLowerCase() === selectedCategory.toLowerCase();
-
+      selectedCategory === 'All' || book.category.toLowerCase() === selectedCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
-
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
@@ -270,7 +184,6 @@ export default function MyBooksPage() {
       </div>
     );
   }
-
   if (!user) {
     return (
       <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center">
@@ -278,7 +191,6 @@ export default function MyBooksPage() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#2c2420] pb-24">
       <div className="relative pt-20 pb-16 bg-[#1f1917] text-white border-b border-[#3b322e]">
@@ -286,18 +198,15 @@ export default function MyBooksPage() {
           <span className="inline-block text-[#d97746] text-xs font-semibold tracking-widest uppercase mb-2 px-3 py-1 bg-[#d97746]/10 rounded-full border border-[#d97746]/20">
             Personal Registry
           </span>
-
           <h1 className="text-3xl md:text-5xl font-serif font-bold tracking-tight">
             My Added Books
           </h1>
-
           <p className="mt-3 text-stone-300 max-w-xl mx-auto text-sm sm:text-base">
             Manage, update, and monitor the circulation of books you have
             contributed to the archive.
           </p>
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 relative z-20">
         <div className="bg-white rounded-2xl shadow-xl shadow-stone-200/60 p-5 sm:p-6 border border-stone-200 space-y-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -307,23 +216,18 @@ export default function MyBooksPage() {
                 placeholder="Search your titles or authors..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-4 pr-4 py-2.5 bg-[#faf8f5] border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#c85a32] text-sm text-[#2c2420]"
-              />
+                className="w-full pl-4 pr-4 py-2.5 bg-[#faf8f5] border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#c85a32] text-sm text-[#2c2420]"/>
             </div>
-
             <div className="flex items-center gap-3 w-full md:w-auto justify-end">
               <button
                 onClick={fetchMyBooks}
                 disabled={loading}
-                className="px-4 py-2.5 bg-[#faf8f5] hover:bg-stone-100 border border-stone-200 text-stone-700 rounded-xl text-sm font-medium transition disabled:opacity-50"
-              >
+                className="px-4 py-2.5 bg-[#faf8f5] hover:bg-stone-100 border border-stone-200 text-stone-700 rounded-xl text-sm font-medium transition disabled:opacity-50">
                 Refresh
               </button>
-
               <Link
                 href="/add-book"
-                className="inline-flex items-center gap-2 bg-[#c85a32] hover:bg-[#b34c26] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition shadow-sm"
-              >
+                className="inline-flex items-center gap-2 bg-[#c85a32] hover:bg-[#b34c26] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition shadow-sm">
                 <span>+</span>
                 <span>Add New Book</span>
               </Link>
@@ -336,11 +240,8 @@ export default function MyBooksPage() {
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition border shrink-0 ${
-                  selectedCategory === cat
-                    ? 'bg-[#2c2420] text-white border-[#2c2420]'
-                    : 'bg-[#faf8f5] text-stone-600 border-stone-200 hover:bg-stone-100'
-                }`}
-              >
+                  selectedCategory === cat ? 'bg-[#2c2420] text-white border-[#2c2420]'  : 'bg-[#faf8f5] text-stone-600 border-stone-200 hover:bg-stone-100'
+                }`} >
                 {cat}
               </button>
             ))}
@@ -356,8 +257,7 @@ export default function MyBooksPage() {
             <button
               onClick={() => setActionSuccess('')}
               className="text-emerald-600 hover:text-emerald-900 text-sm font-bold"
-              aria-label="Close success message"
-            >
+              aria-label="Close success message">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -370,8 +270,7 @@ export default function MyBooksPage() {
             <button
               onClick={() => setError('')}
               className="font-bold text-sm"
-              aria-label="Close error message"
-            >
+              aria-label="Close error message">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -401,8 +300,7 @@ export default function MyBooksPage() {
 
             <Link
               href="/add-book"
-              className="inline-flex items-center gap-2 bg-[#c85a32] text-white px-4 py-2.5 rounded-xl text-xs font-medium hover:bg-[#b34c26] transition"
-            >
+              className="inline-flex items-center gap-2 bg-[#c85a32] text-white px-4 py-2.5 rounded-xl text-xs font-medium hover:bg-[#b34c26] transition">
               Add Your First Book
             </Link>
           </div>
@@ -431,15 +329,13 @@ export default function MyBooksPage() {
                     return (
                       <tr
                         key={bookId}
-                        className="hover:bg-stone-50/60 transition"
-                      >
+                        className="hover:bg-stone-50/60 transition">
                         <td className="py-4 px-4 sm:px-6">
                           <div className="flex items-center gap-3">
                             <img
                               src={book.image}
                               alt={book.title}
-                              className="w-12 h-16 object-cover rounded-lg shadow-sm border border-stone-200 shrink-0"
-                            />
+                              className="w-12 h-16 object-cover rounded-lg shadow-sm border border-stone-200 shrink-0" />
 
                             <div>
                               <h4 className="font-serif font-bold text-[#2c2420] text-sm leading-tight">
@@ -465,8 +361,7 @@ export default function MyBooksPage() {
                               copies > 0
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                                 : 'bg-rose-50 text-rose-700 border border-rose-200'
-                            }`}
-                          >
+                            }`} >
                             {copies} Copies
                           </span>
                         </td>
@@ -475,16 +370,14 @@ export default function MyBooksPage() {
                           <div className="flex items-center justify-end gap-2">
                             <button
                               onClick={() => setEditingBook({ ...book })}
-                              className="px-3 py-1.5 bg-[#faf8f5] hover:bg-stone-100 border border-stone-200 text-stone-700 rounded-lg text-xs font-medium transition"
-                            >
+                              className="px-3 py-1.5 bg-[#faf8f5] hover:bg-stone-100 border border-stone-200 text-stone-700 rounded-lg text-xs font-medium transition">
                               Edit
                             </button>
 
                             <button
                               onClick={() => setDeleteConfirmBook(book)}
                               disabled={deleteLoadingId === bookId}
-                              className="px-3 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg text-xs font-medium transition disabled:opacity-50"
-                            >
+                              className="px-3 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 rounded-lg text-xs font-medium transition disabled:opacity-50" >
                               Delete
                             </button>
                           </div>
@@ -511,8 +404,7 @@ export default function MyBooksPage() {
                 type="button"
                 onClick={() => setEditingBook(null)}
                 className="text-stone-400 hover:text-stone-600 font-bold text-sm"
-                aria-label="Close edit form"
-              >
+                aria-label="Close edit form">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -533,8 +425,7 @@ export default function MyBooksPage() {
                       title: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]"
-                />
+                  className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]" />
               </div>
 
               <div>
@@ -552,8 +443,7 @@ export default function MyBooksPage() {
                       author: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]"
-                />
+                  className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]" />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -570,8 +460,7 @@ export default function MyBooksPage() {
                         category: e.target.value,
                       })
                     }
-                    className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]"
-                  >
+                    className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]" >
                     {CATEGORIES.filter((category) => category !== 'All').map(
                       (category) => (
                         <option key={category} value={category}>
@@ -640,24 +529,21 @@ export default function MyBooksPage() {
                       description: e.target.value,
                     })
                   }
-                  className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]"
-                />
+                  className="w-full px-3.5 py-2 bg-[#faf8f5] border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#c85a32]"/>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-stone-100">
                 <button
                   type="button"
                   onClick={() => setEditingBook(null)}
-                  className="px-4 py-2 border border-stone-200 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-50"
-                >
+                  className="px-4 py-2 border border-stone-200 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-50">
                   Cancel
                 </button>
 
                 <button
                   type="submit"
                   disabled={updateLoading}
-                  className="px-5 py-2 bg-[#c85a32] hover:bg-[#b34c26] text-white rounded-xl text-xs font-medium transition disabled:opacity-50"
-                >
+                  className="px-5 py-2 bg-[#c85a32] hover:bg-[#b34c26] text-white rounded-xl text-xs font-medium transition disabled:opacity-50">
                   {updateLoading ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
@@ -672,8 +558,7 @@ export default function MyBooksPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="delete-dialog-title"
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-stone-200"
-          >
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-stone-200">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 shrink-0 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
                 <AlertTriangle className="w-6 h-6" />
@@ -682,8 +567,7 @@ export default function MyBooksPage() {
               <div className="flex-1">
                 <h3
                   id="delete-dialog-title"
-                  className="text-lg font-bold text-stone-900"
-                >
+                  className="text-lg font-bold text-stone-900">
                   Delete This Book?
                 </h3>
 
@@ -701,8 +585,7 @@ export default function MyBooksPage() {
                 onClick={() => setDeleteConfirmBook(null)}
                 disabled={deleteLoadingId !== null}
                 className="text-stone-400 hover:text-stone-700 disabled:opacity-40"
-                aria-label="Close confirmation"
-              >
+                aria-label="Close confirmation">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -712,8 +595,7 @@ export default function MyBooksPage() {
                 type="button"
                 onClick={() => setDeleteConfirmBook(null)}
                 disabled={deleteLoadingId !== null}
-                className="px-5 py-2.5 rounded-xl border border-stone-200 text-stone-700 text-sm font-semibold hover:bg-stone-50 transition disabled:opacity-50"
-              >
+                className="px-5 py-2.5 rounded-xl border border-stone-200 text-stone-700 text-sm font-semibold hover:bg-stone-50 transition disabled:opacity-50">
                 Cancel
               </button>
 
@@ -721,18 +603,13 @@ export default function MyBooksPage() {
                 type="button"
                 onClick={handleDelete}
                 disabled={deleteLoadingId !== null}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition disabled:opacity-60"
-              >
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-sm font-semibold transition disabled:opacity-60">
                 {deleteLoadingId ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                    Deleting...
-                  </>
+                  <><span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    Deleting... </>
                 ) : (
-                  <>
-                    <Trash2 className="w-4 h-4" />
-                    Delete Book
-                  </>
+                  <> <Trash2 className="w-4 h-4" />
+                    Delete Book</>
                 )}
               </button>
             </div>
@@ -742,7 +619,6 @@ export default function MyBooksPage() {
     </div>
   );
 }
-
 function BookOpenIcon() {
   return <span className="text-2xl font-serif font-bold">BN</span>;
 }
