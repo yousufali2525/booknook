@@ -1,11 +1,9 @@
 import mongoose, { Schema, Document, models, model, Model } from 'mongoose';
 import { IBook } from '../types';
-
 export interface IBookDocument extends Omit<IBook, '_id' | 'createdAt'>, Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
 const bookSchema = new Schema<IBookDocument>(
   {
     title: { 
@@ -68,12 +66,9 @@ const bookSchema = new Schema<IBookDocument>(
     timestamps: true,
   }
 );
-
 bookSchema.index({ title: 'text', author: 'text', description: 'text' });
 bookSchema.index({ category: 1 });
 bookSchema.index({ userEmail: 1 });
 bookSchema.index({ createdAt: -1 });
-
 export const Book: Model<IBookDocument> = (models.Book as Model<IBookDocument>) || model<IBookDocument>('Book', bookSchema);
-
 export default Book;

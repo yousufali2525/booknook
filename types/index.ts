@@ -1,5 +1,4 @@
 export type BookCategory = 'Fiction' | 'Science' | 'History' | 'Kids' | 'Others' | 'Business' | 'Design';
-
 export interface IBook {
   _id: string;
   title: string;
@@ -14,7 +13,6 @@ export interface IBook {
   createdAt: string;
   rating?: number;
 }
-
 export interface IBorrow {
   _id: string;
   bookId: string;
@@ -26,7 +24,6 @@ export interface IBorrow {
   returnDate: string;
   status: 'active' | 'returned';
 }
-
 export interface IUser {
   _id: string;
   name: string;
