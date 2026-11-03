@@ -1,11 +1,9 @@
 import mongoose, { Schema, Document, models, model, Model } from 'mongoose';
 import { IBorrow } from '../types';
-
 export interface IBorrowDocument extends Omit<IBorrow, '_id'>, Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
 const borrowSchema = new Schema<IBorrowDocument>(
   {
     bookId: { 
@@ -55,7 +53,6 @@ const borrowSchema = new Schema<IBorrowDocument>(
     timestamps: true,
   }
 );
-
 borrowSchema.index(
   { userEmail: 1, bookId: 1 }, 
   { unique: true, partialFilterExpression: { status: 'active' } }
@@ -63,7 +60,5 @@ borrowSchema.index(
 borrowSchema.index({ userEmail: 1, status: 1 });
 borrowSchema.index({ bookId: 1, status: 1 });
 borrowSchema.index({ createdAt: -1 });
-
 export const Borrow: Model<IBorrowDocument> = (models.Borrow as Model<IBorrowDocument>) || model<IBorrowDocument>('Borrow', borrowSchema);
-
 export default Borrow;
