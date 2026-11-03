@@ -1,13 +1,7 @@
 'use client';
-
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
+import React, { createContext, useContext,  useEffect, useState,
 } from 'react';
 import { authClient } from '@/lib/auth-client';
-
 export interface User {
   id: string;
   _id?: string;
@@ -17,7 +11,6 @@ export interface User {
   photoURL?: string;
   photo?: string;
 }
-
 interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -26,7 +19,6 @@ interface AuthContextType {
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
 }
-
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
@@ -35,17 +27,14 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   updateUser: () => {},
 });
-
 export function AuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const { data, isPending } = authClient.useSession();
-
   const [token, setToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
-
   const sessionUser = (
     data as unknown as {
       user?: {
@@ -56,9 +45,7 @@ export function AuthProvider({
       };
     } | null
   )?.user;
-
-  const user: User | null = sessionUser
-    ? {
+  const user: User | null = sessionUser ? {
         id: sessionUser.id,
         name: sessionUser.name,
         email: sessionUser.email,
@@ -67,37 +54,29 @@ export function AuthProvider({
         photo: sessionUser.image ?? undefined,
       }
     : null;
-
   useEffect(() => {
     let cancelled = false;
-
     const getToken = async () => {
       if (!sessionUser?.id) {
         setToken(null);
         return;
       }
-
       setTokenLoading(true);
-
       try {
         const response = await fetch('/api/backend-token', {
           method: 'GET',
           credentials: 'include',
           cache: 'no-store',
         });
-
         const result = await response.json();
-
         if (!response.ok || !result.success) {
           throw new Error(result.message || 'Token generation failed');
         }
-
         if (!cancelled) {
           setToken(result.token);
         }
       } catch (error) {
         console.error('Backend token error:', error);
-
         if (!cancelled) {
           setToken(null);
         }
@@ -107,33 +86,24 @@ export function AuthProvider({
         }
       }
     };
-
     getToken();
-
     return () => {
       cancelled = true;
     };
   }, [sessionUser?.id]);
-
   const logout = async (): Promise<void> => {
     setToken(null);
     await authClient.signOut({});
   };
-
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        token,
-        loading: isPending || tokenLoading,
+      value={{ user, token, loading: isPending || tokenLoading,
         login: () => {},
         logout,
         updateUser: () => {},
-      }}
-    >
+      }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
 export const useAuth = () => useContext(AuthContext);

@@ -1,11 +1,9 @@
 import mongoose, { Schema, Document, models, model, Model } from 'mongoose';
 import { IUser } from '../types';
-
 export interface IUserDocument extends Omit<IUser, '_id' | 'createdAt'>, Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
 const userSchema = new Schema<IUserDocument>(
   {
     name: {
@@ -53,8 +51,6 @@ const userSchema = new Schema<IUserDocument>(
     },
   }
 );
-
 export const User: Model<IUserDocument> =
   (models.User as Model<IUserDocument>) || model<IUserDocument>('User', userSchema);
-
 export default User;

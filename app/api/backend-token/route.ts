@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import { auth } from '@/lib/auth';
-
 export async function GET() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
     if (!session?.user) {
       return NextResponse.json(
         {
@@ -18,12 +16,9 @@ export async function GET() {
         { status: 401 }
       );
     }
-
     const secret = process.env.JWT_SECRET;
-
     if (!secret) {
       console.error('JWT_SECRET is missing.');
-
       return NextResponse.json(
         {
           success: false,
@@ -32,7 +27,6 @@ export async function GET() {
         { status: 500 }
       );
     }
-
     const token = jwt.sign(
       {
         id: session.user.id,
@@ -45,7 +39,6 @@ export async function GET() {
         expiresIn: '1d',
       }
     );
-
     return NextResponse.json({
       success: true,
       token,
@@ -57,7 +50,6 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Backend token generation error:', error);
-
     return NextResponse.json(
       {
         success: false,
