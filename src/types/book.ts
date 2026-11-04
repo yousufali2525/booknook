@@ -19,7 +19,6 @@ export interface Book {
   sharedAt?: string;
   createdAt?: string;
 }
-
 export interface SlideData {
   id: number;
   badge: string;

@@ -164,11 +164,10 @@ Create a `.env.local` file in the client project root.
 NEXT_PUBLIC_API_URL=http://localhost:5000/api
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 BETTER_AUTH_URL=http://localhost:3000
-
+JWT_SECRET=your_jwt_secret
 MONGODB_URI=your_mongodb_connection_string
 MONGODB_DB=booknook
 BETTER_AUTH_SECRET=your_better_auth_secret
-
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```

@@ -1,6 +1,5 @@
 
 import { Book, SlideData } from '../types/book';
-
 export const INITIAL_SLIDES: SlideData[] = [
   {
     id: 1,
@@ -30,7 +29,6 @@ export const INITIAL_SLIDES: SlideData[] = [
     bgImage: '/hero_vintage_classics_1793372263916.png',
   },
 ];
-
 export const INITIAL_BOOKS: any[] = [
   {
     id: 'b-1',
